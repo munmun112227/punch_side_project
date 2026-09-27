@@ -1,0 +1,80 @@
+
+name: Punch System CI
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+
+jobs:
+  backend-test:
+    name: Backend CI (Spring Boot)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./punch-backend
+
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up JDK 21
+      uses: actions/setup-java@v4
+      with:
+        java-version: '21'
+        distribution: 'temurin'
+        cache: maven
+        
+    - name: Run Maven Tests
+      run: ./mvnw -B test
+
+  frontend-test:
+    name: Frontend CI (Vue3)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./punch-frontend
+
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+        cache-dependency-path: './punch-frontend/package-lock.json'
+        
+    - name: Install dependencies
+      run: npm ci || npm install
+      
+    - name: Run Vitest
+      run: npm run test -- --run
+      
+    - name: Build Vue App
+      run: npm run build
+
+  deploy:
+    name: CD (Deploy to EC2)
+    needs: [backend-test, frontend-test]
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Deploy to EC2 via SSH
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.EC2_HOST }}
+        username: ${{ secrets.EC2_USERNAME }}
+        key: ${{ secrets.EC2_SSH_KEY }}
+        script: |
+          # 進入專案資料夾 (Amazon Linux 的預設家目錄為 /home/ec2-user)
+          # 請確保您當初 git clone 時的資料夾名稱是 punch_side_project 或是其他名稱，請依實際狀況微調
+          cd /home/ec2-user/punch_side_project
+          
+          # 拉取最新的程式碼
+          git pull origin main
+          
+          # 使用 Docker Compose 重新建置並啟動服務 (背景執行)
+          sudo /usr/local/bin/docker-compose build                                                                              
+          sudo /usr/local/bin/docker-compose up -d 

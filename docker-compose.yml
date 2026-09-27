@@ -1,0 +1,38 @@
+version: '3.8'
+services:
+  backend:
+    build: ./punch-backend
+    container_name: punch-backend
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./punch-backend/keys:/app/keys
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/punchdb
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+    depends_on:
+      - db
+
+  frontend:
+    build: ./punch-frontend
+    container_name: punch-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+
+  db:
+    image: postgres:15-alpine
+    container_name: punch-db
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=punchdb
+    ports:
+      - "5432:5432"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+
+volumes:
+  db-data:

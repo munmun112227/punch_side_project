@@ -1,0 +1,53 @@
+# =========================
+# MacOS & OS-specific
+# =========================
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.Spotlight-V100
+.Trashes
+
+# =========================
+# IDE & Editors (IntelliJ, VSCode)
+# =========================
+.idea/
+*.iml
+*.iws
+*.ipr
+.vscode/
+
+# =========================
+# Backend (Spring Boot & Maven)
+# =========================
+punch-backend/target/
+target/
+*.jar
+*.war
+*.ear
+*.class
+*.log
+hs_err_pid*
+
+# =========================
+# Frontend (Vue 3, Vite & Node)
+# =========================
+punch-frontend/node_modules/
+punch-frontend/dist/
+punch-frontend/dist-ssr/
+punch-frontend/*.local
+punch-frontend/.env.local
+punch-frontend/.env.*.local
+node_modules/
+dist/
+
+# =========================
+# 🔒 Security Secrets (絕對不能上傳的金鑰)
+# =========================
+punch-backend/keys/
+keys/
+*.pem
+*.key
+*.p12
+*.jks
