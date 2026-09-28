@@ -1,5 +1,8 @@
 package com.example.punch.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.example.punch.dto.EncryptedRequest;
 import com.example.punch.dto.PunchRequest;
 import com.example.punch.entity.Employee;
@@ -17,6 +20,7 @@ import java.util.List;
 @Service
 
 public class PunchService {
+    private static final Logger log = LoggerFactory.getLogger(PunchService.class);
 
     private final EmployeeRepository employeeRepository;
     private final PunchRecordRepository punchRecordRepository;
@@ -35,7 +39,8 @@ public class PunchService {
             String decryptedJson = rsaCryptoUtil.decrypt(encryptedRequest.getData());
             PunchRequest request = objectMapper.readValue(decryptedJson, PunchRequest.class);
 
-            Employee employee = employeeRepository.findByEmployeeId(request.getEmployeeId())
+            log.info("Processing punch request for employee: {}", request.getEmployeeId());
+        Employee employee = employeeRepository.findByEmployeeId(request.getEmployeeId())
                     .orElseThrow(() -> new RuntimeException("001")); // Code 001: Unknown employee
 
             PunchRecord record = new PunchRecord();
