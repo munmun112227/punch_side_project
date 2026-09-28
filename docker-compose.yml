@@ -7,6 +7,7 @@ services:
       - "8080:8080"
     volumes:
       - ./punch-backend/keys:/app/keys
+      - ./punch-backend/logs:/app/logs
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/punchdb
       - SPRING_DATASOURCE_USERNAME=postgres
