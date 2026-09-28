@@ -51,8 +51,10 @@ public class PunchService {
             return punchRecordRepository.save(record);
         } catch (RuntimeException e) {
             if ("001".equals(e.getMessage())) throw e;
+            log.error("Unexpected RuntimeException in processPunch", e);
             throw new RuntimeException("901"); // Unexpected
         } catch (Exception e) {
+            log.error("Decryption or parsing error in processPunch", e);
             throw new RuntimeException("801"); // Decryption or parse error
         }
     }
