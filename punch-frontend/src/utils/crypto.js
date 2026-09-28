@@ -22,7 +22,7 @@ export function encryptData(plainObject) {
     const encrypted = publicKeyObj.encrypt(jsonStr, 'RSA-OAEP', {
         md: forge.md.sha256.create(),
         mgf1: {
-            md: forge.md.sha256.create()
+            md: forge.md.sha1.create()
         }
     });
     return forge.util.encode64(encrypted);
